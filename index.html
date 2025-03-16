@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Base64 Converter</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #preview { max-width: 400px; margin: 20px auto; display: block; }
+        textarea { width: 100%; height: 150px; }
+    </style>
+</head>
+<body>
+
+    <h2>Upload an Image to Convert to Base64</h2>
+    <input type="file" id="imageInput" accept="image/jpeg">
+    <br><br>
+    <img id="preview" src="" alt="Image Preview" style="display: none;">
+    <br>
+    <textarea id="base64Output" readonly></textarea>
+
+    <script>
+        document.getElementById("imageInput").addEventListener("change", function(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("preview").src = e.target.result;
+                document.getElementById("preview").style.display = "block";
+            };
+            reader.readAsDataURL(file);
+
+            let formData = new FormData();
+            formData.append("image", file);
+
+            fetch("upload.php", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => document.getElementById("base64Output").value = data)
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+
+</body>
+</html>
